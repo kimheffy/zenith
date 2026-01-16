@@ -1,0 +1,26 @@
+services:
+  postgres:
+    image: postgres:17.4
+    env_file:
+      - .env.development.local
+    container_name: postgres
+    hostname: postgres
+    environment:
+      - POSTGRES_DB=${DATABASE_DB}
+      - POSTGRES_USER=${DATABASE_USER}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+    ports:
+      - "${DATABASE_HOST_PORT}:${DATABASE_CONTAINER_PORT}"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "8080:8080"
+volumes:
+  pgdata:
+networks:
+  default:
+    driver: bridge
