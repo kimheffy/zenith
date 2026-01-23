@@ -13,6 +13,7 @@ import { AuthGuard } from "./auth.guard";
 import { SkipAuth } from "./auth.meta";
 // biome-ignore lint/style/useImportType: need this for DI
 import { AuthService } from "./auth.service";
+import { DatabaseOperationException } from "../errors/common";
 
 @Controller("auth")
 export class AuthController {
@@ -20,8 +21,13 @@ export class AuthController {
 
   @SkipAuth()
   @Post("register")
-  register(@Body() registerDto: UserCredentials) {
-    this.authService.register(registerDto);
+  async register(@Body() registerDto: UserCredentials) {
+    try {
+      await this.authService.register(registerDto);
+    } catch (e) {
+      console.log("register error... ", e);
+      throw new DatabaseOperationException(e.message);
+    }
   }
 
   @SkipAuth()

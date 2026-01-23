@@ -17,8 +17,13 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async register({ email, password }: UserCredentials) {
+  async register({ email, password, username }: UserCredentials) {
     await ConfigModule.envVariablesLoaded;
+
+    const foundUser = await this.userService.findByUserEmail(email);
+    if (foundUser) {
+      throw new Error("Cannot create user.");
+    }
 
     const saltRounds = this.configService.get<number>("SALT_ROUNDS", {
       infer: true,
@@ -27,7 +32,12 @@ export class AuthService {
     try {
       const saltHash = await hash(btoa(password), parseInt(saltRounds, 10));
 
-      this.userService.registerUser({ email, password: saltHash });
+      this.userService.registerUser({
+        email,
+        password: saltHash,
+        username,
+        id: crypto.randomUUID(),
+      });
     } catch (e) {
       console.error("failed to salt hash...", e);
     }

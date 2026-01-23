@@ -12,7 +12,7 @@ export class UserService {
     private userRepository: Repository<User>,
   ) {}
 
-  async registerUser(registerUser: UserCredentials) {
+  async registerUser(registerUser: UserCredentials & { id: string }) {
     await this.userRepository.insert(registerUser);
   }
 
