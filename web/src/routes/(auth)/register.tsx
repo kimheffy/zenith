@@ -1,5 +1,6 @@
 import { Button } from "@base-ui/react/button";
 import { Field } from "@base-ui/react/field";
+import { Toast } from "@base-ui/react/toast";
 import type { DeepKeys, ValidationError } from "@tanstack/react-form";
 import { revalidateLogic, useForm } from "@tanstack/react-form";
 import { createFileRoute } from "@tanstack/react-router";
@@ -87,6 +88,7 @@ function isEmpty(
 }
 
 function RouteComponent() {
+  const toastManager = Toast.useToastManager();
   const form = useForm({
     defaultValues: {
       email: "",
@@ -111,15 +113,25 @@ function RouteComponent() {
 
         return isEmpty(errors) ? undefined : { form: errors, fields: errors };
       },
-    },
-    onSubmit: async ({ value }) => {
-      return fetch("http://localhost:3000/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(value),
-      });
+      onSubmitAsync: async ({ value: data, signal }) => {
+        const res = await fetch("http://localhost:3000/auth/register", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+          signal,
+        });
+
+        if (res.ok) {
+          console.log(await res.json());
+        } else {
+          // console.log("something failed...");
+          toastManager.add({
+            title: "Something went wrong...",
+          });
+        }
+      },
     },
   });
 
