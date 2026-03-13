@@ -4,7 +4,7 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { isAuthenticatedFn, assertAuthenticatedFn } from "~/fn/auth";
 
-export const Route = createFileRoute("/(app)/workout")({
+export const Route = createFileRoute("/(app)/_appLayout/workout")({
   beforeLoad: () => assertAuthenticatedFn(),
   component: RouteComponent,
 });
