@@ -54,6 +54,9 @@ http (/register POST) -> (call a controller) -> use-cases -> entities -> use-cas
 - [x] create `sqlx` migration up & down
 - [x] create entity user
 - [x] complete register user flow
-- [] add logging
+- [x] add logging
+    - [] try to find a home for the logging on main.rs - i tried extracting out TracingLayer but couldn't due to my limited knowledge on complicated types
+- [] add password_hash
+- [] JWT
 - [] create unit test and e2e tests
 - [] think about the api routes
