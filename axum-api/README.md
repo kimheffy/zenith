@@ -48,3 +48,12 @@ entity | application | interface-adapters | infra & frameworks
 [OUTER] -> [INNER]
 http (/register POST) -> (call a controller) -> use-cases -> entities -> use-cases -> presenters
 
+
+# TODOS
+
+- [x] create `sqlx` migration up & down
+- [x] create entity user
+- [x] complete register user flow
+- [] add logging
+- [] create unit test and e2e tests
+- [] think about the api routes

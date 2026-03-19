@@ -6,7 +6,7 @@ use crate::framework::postgres::postgres_persistence;
 use crate::infrastructure::repository::user_repo;
 
 pub async fn init_app() -> anyhow::Result<AppState> {
-    // load in the config
+    // TODO: load in the config
 
     // init database connection
     let postgres_arc = Arc::new(postgres_persistence().await?);

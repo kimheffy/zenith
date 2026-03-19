@@ -1,3 +1,35 @@
-// pub mod app;
-// pub mod config;
-// pub mod setup;
+use crate::entity::user::RegisterUserRequest;
+use crate::framework::axum::app_state::AppState;
+use axum::Json;
+use axum::extract::State;
+use axum::http::StatusCode;
+use axum::{Router, routing::get, routing::post};
+use std::sync::Arc;
+
+pub fn router(shared_state: AppState) -> Router {
+    Router::new()
+        .route("/", get(root))
+        .route("/register", post(register_handler))
+        .with_state(Arc::new(shared_state))
+}
+
+async fn root() -> &'static str {
+    "Hello world!"
+}
+
+// handler could be renamed to 'controller'
+async fn register_handler(
+    State(state): State<Arc<AppState>>,
+    Json(payload): Json<RegisterUserRequest>,
+) -> (StatusCode, ()) {
+    // validate
+    if payload.username.is_empty() || payload.email.is_empty() {
+        return (StatusCode::NOT_ACCEPTABLE, ());
+    }
+
+    let registered_user = RegisterUserRequest::new(payload.username, payload.email);
+
+    state.user_repo.register_user(&registered_user).await;
+
+    (StatusCode::CREATED, ())
+}

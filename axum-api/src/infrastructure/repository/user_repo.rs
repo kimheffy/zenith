@@ -1,22 +1,22 @@
+use crate::application::repository::user_repo_trait;
+use crate::entity::user::RegisterUserRequest;
+use crate::framework::postgres::persistence;
 use async_trait;
 use sqlx;
-use uuid::Uuid;
-
-use crate::application::repository::user_repo_trait;
-use crate::framework::postgres::persistence;
 
 #[async_trait::async_trait]
 impl user_repo_trait::UserRepo for persistence::PostgresPersistence {
-    async fn register_user(&self) {
+    async fn register_user(&self, registered_user: &RegisterUserRequest) -> anyhow::Result<()> {
         println!("calling register_user");
-        let uuid = Uuid::new_v4();
+
         sqlx::query!(
-            "INSERT INTO users (id, username, email) VALUES ($1, $2, $3)",
-            uuid,
-            "heffy cuh testing clean",
-            "clean.code@arch.com"
+            "INSERT INTO users (username, email) VALUES ($1, $2)",
+            registered_user.username,
+            registered_user.email,
         )
         .execute(&self.pool)
-        .await;
+        .await?;
+
+        Ok(())
     }
 }
