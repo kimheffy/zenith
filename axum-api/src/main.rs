@@ -1,10 +1,10 @@
 use axum::{extract::MatchedPath, http::Request};
 use axum_api::framework::axum::app;
 use axum_api::framework::axum::setup::init_app;
+use axum_api::framework::tracing::init_tracing;
 use dotenv::dotenv;
 use tower_http::trace::TraceLayer;
 use tracing::info_span;
-use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 // TODO: think of a place for this type
 type RepositoryResult<T> = Result<T, sqlx::Error>;
@@ -13,18 +13,7 @@ type RepositoryResult<T> = Result<T, sqlx::Error>;
 async fn main() -> anyhow::Result<()> {
     dotenv().ok();
 
-    tracing_subscriber::registry()
-        .with(
-            tracing_subscriber::EnvFilter::try_from_default_env().unwrap_or_else(|_| {
-                format!(
-                    "{}=debug,tower_http=debug,axum::rejection=true",
-                    env!("CARGO_CRATE_NAME")
-                )
-                .into()
-            }),
-        )
-        .with(tracing_subscriber::fmt::layer())
-        .init();
+    init_tracing();
 
     // setup
     let shared_state = init_app().await?;
