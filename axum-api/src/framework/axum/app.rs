@@ -1,3 +1,4 @@
+use crate::application::use_case::user_use_case;
 use crate::entity::user::RegisterUserRequest;
 use crate::framework::axum::app_state::AppState;
 use axum::Json;
@@ -23,13 +24,14 @@ async fn register_handler(
     Json(payload): Json<RegisterUserRequest>,
 ) -> (StatusCode, ()) {
     // validate
-    if payload.username.is_empty() || payload.email.is_empty() {
+    if payload.username.is_empty() || payload.email.is_empty() || payload.password.is_empty() {
         return (StatusCode::NOT_ACCEPTABLE, ());
     }
 
-    let registered_user = RegisterUserRequest::new(payload.username, payload.email);
+    let registered_user =
+        RegisterUserRequest::new(payload.username, payload.email, payload.password);
 
-    state.user_repo.register_user(&registered_user).await;
+    user_use_case::register_user_use_case(&registered_user, state.user_repo.as_ref()).await;
 
     (StatusCode::CREATED, ())
 }

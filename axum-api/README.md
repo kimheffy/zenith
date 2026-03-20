@@ -56,7 +56,8 @@ http (/register POST) -> (call a controller) -> use-cases -> entities -> use-cas
 - [x] complete register user flow
 - [x] add logging
     - [] try to find a home for the logging on main.rs - i tried extracting out TracingLayer but couldn't due to my limited knowledge on complicated types
-- [] add password_hash
+- [x] add password_hash
+- [] fix unused Results
 - [] JWT
 - [] create unit test and e2e tests
 - [] think about the api routes
