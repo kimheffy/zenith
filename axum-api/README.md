@@ -57,6 +57,7 @@ http (/register POST) -> (call a controller) -> use-cases -> entities -> use-cas
 - [x] add logging
     - [] try to find a home for the logging on main.rs - i tried extracting out TracingLayer but couldn't due to my limited knowledge on complicated types
 - [x] add password_hash
+- [] create errors types
 - [] fix unused Results
 - [] JWT
 - [] create unit test and e2e tests

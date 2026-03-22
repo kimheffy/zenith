@@ -1,5 +1,6 @@
 use crate::application::repository::user_repo_trait;
 use crate::entity::user::RegisterUserRequest;
+use anyhow::Context;
 use argon2::Argon2;
 use argon2::password_hash::SaltString;
 use argon2::password_hash::rand_core::OsRng;
@@ -24,7 +25,8 @@ pub async fn register_user_use_case(
 
     user_repo
         .register_user(registered_user, hashed_password)
-        .await;
+        .await
+        .context("failed to register user")?;
 
     Ok(())
 }
