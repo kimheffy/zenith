@@ -1,3 +1,4 @@
+use crate::entity::error::AppError;
 use crate::entity::user::RegisterUserRequest;
 use async_trait;
 
@@ -7,5 +8,5 @@ pub trait UserRepo: Send + Sync {
         &self,
         registered_user: &RegisterUserRequest,
         hashed_password: [u8; 32],
-    ) -> anyhow::Result<()>;
+    ) -> anyhow::Result<(), AppError>;
 }

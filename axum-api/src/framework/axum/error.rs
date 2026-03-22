@@ -12,7 +12,15 @@ impl IntoResponse for AppError {
         }
 
         let (status, message) = match &self {
-            AppError::InvalidInput => (StatusCode::NOT_ACCEPTABLE, "invalid input".to_string()),
+            AppError::InvalidInput => (StatusCode::NOT_ACCEPTABLE, "Invalid input".to_string()),
+            AppError::PasswordHashFailed => (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "Unexpected error".to_string(),
+            ),
+            AppError::DatabaseOperationError => (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "Unexpected database error".to_string(),
+            ),
         };
 
         (status, AppJson(ErrorResponse { message })).into_response()

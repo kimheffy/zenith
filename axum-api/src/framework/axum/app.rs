@@ -31,7 +31,7 @@ async fn register_handler(
     let registered_user =
         RegisterUserRequest::new(payload.username, payload.email, payload.password);
 
-    user_use_case::register_user_use_case(&registered_user, state.user_repo.as_ref()).await;
+    user_use_case::register_user_use_case(&registered_user, state.user_repo.as_ref()).await?;
 
     Ok(())
 }
