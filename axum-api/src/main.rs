@@ -15,10 +15,8 @@ async fn main() -> anyhow::Result<()> {
 
     init_tracing();
 
-    // setup
     let shared_state = init_app().await?;
 
-    // main
     let listener = tokio::net::TcpListener::bind("127.0.0.1:3000").await?;
     tracing::debug!("listening on {}", listener.local_addr().unwrap());
 
@@ -33,9 +31,7 @@ async fn main() -> anyhow::Result<()> {
         },
     ));
 
-    // main
     axum::serve(listener, app).await?;
 
-    // main
     Ok(())
 }

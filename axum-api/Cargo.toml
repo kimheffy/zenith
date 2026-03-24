@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+axum-extra = { version = "0.12.5", features = ["typed-header"] }
 anyhow = "1.0.102"
 axum = { version = "0.8.8", features = ["macros"] }
 serde = { version = "1.0.228", features = ["derive"] }
@@ -23,3 +24,4 @@ tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
 tower-http = { version = "0.6.1", features = ["trace"] }
 tower-layer = "0.3.3"
 argon2 = "0.5.3"
+jsonwebtoken = { version = "10", features = ["aws_lc_rs"] }
