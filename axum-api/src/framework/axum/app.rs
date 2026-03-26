@@ -2,20 +2,12 @@ use crate::application::use_case::user_use_case;
 use crate::entity::error::AppError;
 use crate::entity::user::RegisterUserRequest;
 use crate::framework::axum::app_state::AppState;
-use anyhow::Context;
 use axum::extract::State;
-use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use axum::{Json, debug_handler};
 use axum::{Router, routing::get, routing::post};
-use jsonwebtoken::{DecodingKey, EncodingKey, Header, Validation, decode, encode};
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
-
-#[derive(Serialize, Deserialize)]
-struct Claim {
-    email: String,
-}
 
 #[derive(Serialize, Deserialize)]
 struct AuthBody {
@@ -38,11 +30,16 @@ impl IntoResponse for AuthBody {
     }
 }
 
+#[derive(Serialize, Deserialize)]
+struct AuthorizeUserRequest {
+    email: String,
+}
+
 pub fn router(shared_state: AppState) -> Router {
     Router::new()
         .route("/", get(root))
         .route("/register", post(register_handler))
-        .route("/authorize", get(authorize_handler))
+        .route("/authorize", post(authorize_handler))
         .with_state(Arc::new(shared_state))
 }
 
@@ -60,10 +57,15 @@ async fn register_handler(
         return Err(AppError::InvalidInput);
     }
 
+    // we can either call user_repo.findEmail here in the handler
+    // OR do that check inside use-case
+
     let registered_user =
         RegisterUserRequest::new(payload.username, payload.email, payload.password);
 
     user_use_case::register_user_use_case(&registered_user, state.user_repo.as_ref()).await?;
+
+    // after we successfully created the user, we should return back a session
 
     Ok(())
 }
@@ -71,16 +73,15 @@ async fn register_handler(
 #[debug_handler]
 async fn authorize_handler(
     State(state): State<Arc<AppState>>,
+    Json(payload): Json<AuthorizeUserRequest>,
 ) -> anyhow::Result<AuthBody, AppError> {
-    let claim = Claim {
-        email: "test@test.com".to_string(),
-    };
-    let token = encode(
-        &Header::default(),
-        &claim,
-        &EncodingKey::from_secret(state.config.jwt_secret.as_bytes()),
-    )
-    .unwrap();
+    // handle payload validation
+
+    let token = state
+        .authentication_service
+        .create_session(&payload.email, state.config.jwt_secret.as_bytes())?;
+
+    println!("got token from auth service -- {:?}", token);
 
     Ok(AuthBody::new(token))
 }

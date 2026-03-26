@@ -49,16 +49,5 @@ entity | application | interface-adapters | infra & frameworks
 http (/register POST) -> (call a controller) -> use-cases -> entities -> use-cases -> presenters
 
 
-# TODOS
+A CONTROLLER does validations, calls service and then use-case
 
-- [x] create `sqlx` migration up & down
-- [x] create entity user
-- [x] complete register user flow
-- [x] add logging
-    - [] try to find a home for the logging on main.rs - i tried extracting out TracingLayer but couldn't due to my limited knowledge on complicated types
-- [x] add password_hash
-- [x] create errors types
-- [x] fix unused Results
-- [] JWT
-- [] create unit test and e2e tests
-- [] think about the api routes
