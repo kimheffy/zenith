@@ -21,6 +21,10 @@ impl IntoResponse for AppError {
                 StatusCode::INTERNAL_SERVER_ERROR,
                 "Unexpected database error".to_string(),
             ),
+            AppError::JWTEncodeFailed => (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "Unexpected encoding error".to_string(),
+            ),
         };
 
         (status, AppJson(ErrorResponse { message })).into_response()

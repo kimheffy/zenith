@@ -3,4 +3,5 @@ pub enum AppError {
     InvalidInput,
     PasswordHashFailed,
     DatabaseOperationError,
+    JWTEncodeFailed,
 }

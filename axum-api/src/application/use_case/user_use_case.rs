@@ -4,6 +4,7 @@ use crate::entity::user::RegisterUserRequest;
 use argon2::Argon2;
 use argon2::password_hash::SaltString;
 use argon2::password_hash::rand_core::OsRng;
+use uuid::Uuid;
 
 fn hash_password(password: &String) -> anyhow::Result<[u8; 32], AppError> {
     let salt = SaltString::generate(&mut OsRng).to_string();
@@ -22,12 +23,10 @@ fn hash_password(password: &String) -> anyhow::Result<[u8; 32], AppError> {
 pub async fn register_user_use_case(
     registered_user: &RegisterUserRequest,
     user_repo: &dyn user_repo_trait::UserRepo,
-) -> anyhow::Result<(), AppError> {
+) -> anyhow::Result<Uuid, AppError> {
     let hashed_password = hash_password(&registered_user.password)?;
 
     user_repo
-        .register_user(registered_user, hashed_password)
-        .await?;
-
-    Ok(())
+        .register_user(registered_user, &hashed_password)
+        .await
 }
