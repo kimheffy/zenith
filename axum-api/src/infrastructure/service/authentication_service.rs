@@ -4,6 +4,7 @@ use crate::{
 };
 use jsonwebtoken::{EncodingKey, Header, encode};
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 const TWO_WEEKS_IN_SECONDS: usize = 1_209_600;
 
@@ -13,19 +14,19 @@ pub struct AuthenticationService;
 struct Claim {
     // issued at
     iat: usize,
-    email: String,
     // expire at
     exp: usize,
+    user_id: String,
 }
 
 impl AuthenticationServiceTrait for AuthenticationService {
-    fn create_session(&self, email: &str, jwt_secret: &[u8]) -> anyhow::Result<String, AppError> {
+    fn create_session(&self, id: Uuid, jwt_secret: &[u8]) -> anyhow::Result<String, AppError> {
         let now = chrono::Utc::now().timestamp() as usize;
 
         let claim = Claim {
             iat: now,
             exp: now + TWO_WEEKS_IN_SECONDS,
-            email: email.to_string(),
+            user_id: id.to_string(),
         };
 
         let token = encode(

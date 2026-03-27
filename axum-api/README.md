@@ -51,3 +51,5 @@ http (/register POST) -> (call a controller) -> use-cases -> entities -> use-cas
 
 A CONTROLLER does validations, calls service and then use-case
 
+use-cases should only check for authorizations
+
