@@ -61,7 +61,7 @@ async fn register_handler(
     // OR do that check inside use-case
 
     let registered_user =
-        RegisterUserRequest::new(payload.username, payload.email, payload.password);
+        RegisterUserRequest::new(&payload.username, &payload.email, &payload.password);
 
     let created_user_id =
         user_use_case::register_user_use_case(&registered_user, state.user_repo.as_ref()).await?;
