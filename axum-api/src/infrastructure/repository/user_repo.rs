@@ -24,3 +24,59 @@ impl user_repo_trait::UserRepo for persistence::PostgresPersistence {
         .map_err(|_| AppError::DatabaseOperationError)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::application::repository::user_repo_trait::UserRepo;
+    use crate::entity::error::AppError;
+    use crate::entity::user::RegisterUserRequest;
+    use crate::framework::postgres::persistence;
+    use sqlx::PgPool;
+    use sqlx::postgres::PgPoolOptions;
+    use uuid::Uuid;
+
+    async fn test_db() -> Result<PgPool, sqlx::Error> {
+        let db_url = "postgres://postgres:1234@localhost:5432/zenith_test";
+
+        let pool = PgPoolOptions::new()
+            .max_connections(1)
+            .connect(db_url)
+            .await?;
+
+        sqlx::migrate!("./migrations").run(&pool).await?;
+
+        Ok(pool)
+    }
+
+    #[sqlx::test]
+    async fn test_user_repo_register_user() -> sqlx::Result<(), AppError> {
+        let pool = test_db().await.unwrap();
+
+        let in_memory_persistence = persistence::PostgresPersistence::new(pool.clone());
+
+        let username = "test user 1";
+        let email = "test@test.com";
+        let password = "test1";
+
+        let registered_user = RegisterUserRequest::new(username, email, password);
+
+        let hashed_password = b"hello world!";
+
+        let test_id = in_memory_persistence
+            .register_user(&registered_user, hashed_password)
+            .await?;
+
+        let user: (Uuid, String, String) =
+            sqlx::query_as("SELECT id, username, email FROM users WHERE email = $1")
+                .bind(email)
+                .fetch_one(&pool)
+                .await
+                .unwrap();
+
+        assert_eq!(test_id, user.0);
+        assert_eq!(username, user.1);
+        assert_eq!(email, user.2);
+
+        Ok(())
+    }
+}
