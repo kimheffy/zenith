@@ -32,26 +32,10 @@ mod tests {
     use crate::entity::user::RegisterUserRequest;
     use crate::framework::postgres::persistence;
     use sqlx::PgPool;
-    use sqlx::postgres::PgPoolOptions;
     use uuid::Uuid;
 
-    async fn test_db() -> Result<PgPool, sqlx::Error> {
-        let db_url = "postgres://postgres:1234@localhost:5432/zenith_test";
-
-        let pool = PgPoolOptions::new()
-            .max_connections(1)
-            .connect(db_url)
-            .await?;
-
-        sqlx::migrate!("./migrations").run(&pool).await?;
-
-        Ok(pool)
-    }
-
     #[sqlx::test]
-    async fn test_user_repo_register_user() -> sqlx::Result<(), AppError> {
-        let pool = test_db().await.unwrap();
-
+    async fn test_user_repo_register_user(pool: PgPool) -> sqlx::Result<(), AppError> {
         let in_memory_persistence = persistence::PostgresPersistence::new(pool.clone());
 
         let username = "test user 1";
