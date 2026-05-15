@@ -1,6 +1,8 @@
 name: Rust Test Suite
 run-name: ${{ github.actor }} is testing out Rust Test Suite
-on: [push, pull-request]
+on:
+  push:
+  pull_request:
 jobs:
   test:
     name: cargo test
