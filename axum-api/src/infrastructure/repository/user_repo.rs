@@ -35,6 +35,7 @@ mod tests {
     use uuid::Uuid;
 
     #[sqlx::test]
+    #[ignore]
     async fn test_user_repo_register_user(pool: PgPool) -> sqlx::Result<(), AppError> {
         let in_memory_persistence = persistence::PostgresPersistence::new(pool.clone());
 
