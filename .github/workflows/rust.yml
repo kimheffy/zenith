@@ -21,4 +21,5 @@ jobs:
           components: rustfmt
       - name: Rustfmt check
         uses: actions-rust-lang/rustfmt@v1
-        run: cargo fmt --manifest-path axum-api/Cargo.toml
+        with:
+          manifest-path: axum-api/Cargo.toml
