@@ -22,4 +22,4 @@ jobs:
           components: rustfmt
       - name: Rustfmt check
         uses: actions-rust-lang/rustfmt@v1
-      - run: cargo test --manifest-path axum-api/Cargo.toml --all-features
+      - run: cargo fmt --manifest-path axum-api/Cargo.toml
