@@ -1,4 +1,16 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
+use uuid::Uuid;
+
+#[derive(Serialize)]
+#[allow(dead_code)]
+struct User {
+    id: Uuid,
+    username: String,
+    email: String,
+    // NOTE: add password_hash back when implementing jwt
+    password_hashed: String,
+    created_at: u64,
+}
 
 #[derive(std::fmt::Debug, Deserialize)]
 pub struct RegisterUserRequest {

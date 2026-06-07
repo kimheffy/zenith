@@ -7,6 +7,7 @@ use tower_http::trace::TraceLayer;
 use tracing::info_span;
 
 // TODO: think of a place for this type
+#[allow(dead_code)]
 type RepositoryResult<T> = Result<T, sqlx::Error>;
 
 #[tokio::main]
