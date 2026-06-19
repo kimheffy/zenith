@@ -34,7 +34,8 @@ the format most convenient for some external agency such as DB or Web
         - `service`
     - `framework/`
         - `axum/`
-            - `handler/`
+            - `handler/` _(group related handlers in domain-specific modules)_
+              - `user.rs`
             - `route/`
             - `app.rs`
             - `config.rs`
