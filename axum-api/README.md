@@ -26,7 +26,7 @@ the format most convenient for some external agency such as DB or Web
         - `use_case` 
         - `repository` (define the interface) 
         - `service` (define the interface)
-    - `interface_adapter/`
+    - `interface_adapter/` (don't have this dir yet...)
         - `controller`
         - `presenter`
     - `infrastructure/`
@@ -50,7 +50,6 @@ entity | application | interface-adapters | infra & frameworks
 http (/register POST) -> (call a controller) -> use-cases -> entities -> use-cases -> presenters
 
 
-A CONTROLLER does validations, calls service and then use-case
-
-use-cases should only check for authorizations
+- A CONTROLLER/HANDLER does basic validations,
+- use-cases should only check for authorizations
 

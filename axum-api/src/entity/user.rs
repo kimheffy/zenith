@@ -1,15 +1,15 @@
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-#[derive(Serialize)]
-#[allow(dead_code)]
-struct User {
-    id: Uuid,
+use chrono::NaiveDateTime;
+
+#[derive(sqlx::FromRow, Serialize, sqlx::Type)]
+pub struct User {
+    pub id: Uuid,
     username: String,
     email: String,
-    // NOTE: add password_hash back when implementing jwt
     password_hashed: String,
-    created_at: u64,
+    created_at: NaiveDateTime,
 }
 
 #[derive(std::fmt::Debug, Deserialize)]
@@ -26,5 +26,17 @@ impl RegisterUserRequest {
             email: email.to_string(),
             password: password.to_string(),
         }
+    }
+}
+
+#[derive(std::fmt::Debug, Deserialize)]
+pub struct SignUserInRequest {
+    pub email: String,
+    pub password: String,
+}
+
+impl SignUserInRequest {
+    pub fn new(email: String, password: String) -> Self {
+        Self { email, password }
     }
 }
