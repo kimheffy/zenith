@@ -1,6 +1,6 @@
 use crate::application::use_case::user_use_case;
 use crate::entity::error::AppError;
-use crate::entity::user::RegisterUserRequest;
+use crate::entity::user::{RegisterUserRequest, SignUserInRequest};
 use crate::framework::axum::app_state::AppState;
 use axum::extract::State;
 use axum::routing::post;
@@ -16,23 +16,42 @@ async fn register_user(
         return Err(AppError::InvalidInput);
     }
 
-    // we can either call user_repo.findEmail here in the handler
-    // OR do that check inside use-case
-
     let registered_user =
         RegisterUserRequest::new(&payload.username, &payload.email, &payload.password);
 
-    let created_user_id =
-        user_use_case::register_user_use_case(&registered_user, state.user_repo.as_ref()).await?;
+    user_use_case::register_user_use_case(
+        &registered_user,
+        state.user_repo.as_ref(),
+        state.authentication_service.as_ref(),
+        &state.config,
+    )
+    .await
+}
 
-    // after we successfully created the user, we should return back a session
-    let token = state
-        .authentication_service
-        .create_session(created_user_id, state.config.jwt_secret.as_bytes())?;
+async fn sign_user_in(
+    State(state): State<Arc<AppState>>,
+    Json(payload): Json<SignUserInRequest>,
+) -> anyhow::Result<String, AppError> {
+    if payload.email.is_empty() || payload.password.is_empty() {
+        // TODO: 'InvalidInput' doesn't seem appropriate...
+        return Err(AppError::InvalidInput);
+    }
+
+    let sign_user_in = SignUserInRequest::new(payload.email, payload.password);
+
+    let token = user_use_case::sign_user_in_use_case(
+        &sign_user_in,
+        state.user_repo.as_ref(),
+        state.authentication_service.as_ref(),
+        state.config.as_ref(),
+    )
+    .await?;
 
     Ok(token)
 }
 
 pub fn user_routes() -> Router<Arc<AppState>> {
-    Router::new().route("/register", post(register_user))
+    Router::new()
+        .route("/register", post(register_user))
+        .route("/sign_in", post(sign_user_in))
 }

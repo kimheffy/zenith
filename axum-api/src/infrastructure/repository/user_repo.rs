@@ -1,6 +1,6 @@
 use crate::application::repository::user_repo_trait;
 use crate::entity::error::AppError;
-use crate::entity::user::RegisterUserRequest;
+use crate::entity::user::{RegisterUserRequest, User};
 use crate::framework::postgres::persistence;
 use async_trait;
 use sqlx;
@@ -22,6 +22,15 @@ impl user_repo_trait::UserRepo for persistence::PostgresPersistence {
         .fetch_one(&self.pool)
         .await
         .map_err(|_| AppError::DatabaseOperationError)
+    }
+
+    async fn find_user_by_email(&self, email: &str) -> anyhow::Result<User, AppError> {
+        sqlx::query_scalar("SELECT * FROM users WHERE email = $1")
+            .bind(&email)
+            .fetch_one(&self.pool)
+            .await
+            .map(|user| user)
+            .map_err(|_| AppError::DatabaseOperationError)
     }
 }
 
