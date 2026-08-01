@@ -11,7 +11,7 @@ impl user_repo_trait::UserRepo for persistence::PostgresPersistence {
     async fn register_user(
         &self,
         registered_user: &RegisterUserRequest,
-        hashed_password: &[u8],
+        hashed_password: &String,
     ) -> anyhow::Result<Uuid, AppError> {
         sqlx::query_scalar(
             "INSERT INTO users (username, email, password_hash) VALUES ($1, $2, $3) RETURNING id",
@@ -25,11 +25,10 @@ impl user_repo_trait::UserRepo for persistence::PostgresPersistence {
     }
 
     async fn find_user_by_email(&self, email: &str) -> anyhow::Result<User, AppError> {
-        sqlx::query_scalar("SELECT * FROM users WHERE email = $1")
+        sqlx::query_as("SELECT * FROM users WHERE email = $1")
             .bind(&email)
             .fetch_one(&self.pool)
             .await
-            .map(|user| user)
             .map_err(|_| AppError::DatabaseOperationError)
     }
 }
@@ -54,10 +53,10 @@ mod tests {
 
         let registered_user = RegisterUserRequest::new(username, email, password);
 
-        let hashed_password = b"hello world!";
+        let hashed_password = String::from("hello world!");
 
         let test_id = in_memory_persistence
-            .register_user(&registered_user, hashed_password)
+            .register_user(&registered_user, &hashed_password)
             .await?;
 
         let user: (Uuid, String, String) =

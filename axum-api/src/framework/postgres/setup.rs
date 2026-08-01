@@ -9,5 +9,7 @@ pub async fn init_db() -> anyhow::Result<PgPool> {
         .connect(&database_url)
         .await?;
 
+    sqlx::migrate!().run(&pool).await?;
+
     Ok(pool)
 }
