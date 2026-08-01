@@ -8,7 +8,7 @@ pub trait UserRepo: Send + Sync {
     async fn register_user(
         &self,
         registered_user: &RegisterUserRequest,
-        hashed_password: &[u8],
+        hashed_password: &String,
     ) -> anyhow::Result<Uuid, AppError>;
 
     async fn find_user_by_email(&self, email: &str) -> anyhow::Result<User, AppError>;

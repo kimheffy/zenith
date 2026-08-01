@@ -7,7 +7,7 @@ CREATE TABLE
     id UUID PRIMARY KEY NOT NULL DEFAULT (uuid_generate_v4()),
     username VARCHAR(255) NOT NULL UNIQUE,
     email VARCHAR(255) NOT NULL UNIQUE,
-    password_hash BYTEA NOT NULL,
+    password_hash VARCHAR(255) NOT NULL UNIQUE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
   );

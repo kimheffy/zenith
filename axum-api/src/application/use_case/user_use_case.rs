@@ -26,7 +26,7 @@ pub async fn register_user_use_case(
     let hashed_password = hash_password(&registered_user.password)?;
 
     let created_uuid = user_repo
-        .register_user(registered_user, &hashed_password.as_bytes())
+        .register_user(registered_user, &hashed_password)
         .await?;
     auth_service.create_session(created_uuid, config.jwt_secret.as_bytes())
 }
@@ -37,13 +37,13 @@ pub async fn sign_user_in_use_case(
     auth_service: &dyn authentication_service::AuthenticationServiceTrait,
     config: &config::AppConfig,
 ) -> anyhow::Result<String, AppError> {
-    let found_user = user_repo.find_user_by_email(&user.email).await;
-    if found_user.is_err() {
+    let does_user_exist = user_repo.find_user_by_email(&user.email).await;
+    if does_user_exist.is_err() {
         // TODO: create a new AppError (Failed to find account with email)
         return Err(AppError::DatabaseOperationError);
     }
 
-    let found_user = found_user.unwrap();
+    let existing_user = does_user_exist.unwrap();
 
     let hashed_password = hash_password(&user.password)?.to_string();
     let parsed_hash = PasswordHash::new(&hashed_password).unwrap();
@@ -56,5 +56,5 @@ pub async fn sign_user_in_use_case(
         return Err(AppError::PasswordHashFailed);
     }
 
-    auth_service.create_session(found_user.id, config.jwt_secret.as_bytes())
+    auth_service.create_session(existing_user.id, config.jwt_secret.as_bytes())
 }
